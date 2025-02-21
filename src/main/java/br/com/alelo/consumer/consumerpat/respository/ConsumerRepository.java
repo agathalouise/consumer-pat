@@ -1,23 +1,25 @@
 package br.com.alelo.consumer.consumerpat.respository;
 
-import br.com.alelo.consumer.consumerpat.entity.Consumer;
+import br.com.alelo.consumer.consumerpat.entities.ConsumerEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.util.Optional;
 
-public interface ConsumerRepository extends JpaRepository<Consumer, Integer> {
+public interface ConsumerRepository extends JpaRepository<ConsumerEntity, Integer> {
+    Page<ConsumerEntity> findAll(Pageable pageable);
 
-    @Query(nativeQuery = true, value = "select * from Consumer")
-    List<Consumer> getAllConsumersList();
+    Optional<ConsumerEntity> findByDocNumber(String docNumber);
 
-    @Query(nativeQuery = true, value = "select * from Consumer where FOOD_CARD_NUMBER = ? ")
-    Consumer findByFoodCardNumber(int cardNumber);
-
-    @Query(nativeQuery = true, value = "select * from Consumer where FUEL_CARD_NUMBER = ? ")
-    Consumer findByFuelCardNumber(int cardNumber);
-
-    @Query(nativeQuery = true, value = "select * from Consumer where DRUGSTORE_NUMBER = ? ")
-    Consumer findByDrugstoreNumber(int cardNumber);
+    @Query("""
+                SELECT c FROM Consumer c 
+                WHERE c.drugstoreNumber = :cardNumber 
+                   OR c.foodCardNumber = :cardNumber 
+                   OR c.fuelCardNumber = :cardNumber
+            """)
+    Optional<ConsumerEntity> findByAnyCardNumber(@Param("cardNumber") Long cardNumber);
 
 }
