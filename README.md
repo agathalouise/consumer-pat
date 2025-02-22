@@ -27,7 +27,7 @@ Então, esteja preparado para mostrar suas habilidades e sua capacidade de tomar
 * Ao fim, realize o **commit** e nos envie um **Pull Request**.
 
 Observação: caso não possua acesso a uma IDE e necessite realizar as alterações, o GitHub possui um editor web, 
-basta clicar [aqui](https://github.dev/alelo-dev/consumerEntity-pat) para acessar.
+basta clicar [aqui](https://github.dev/alelo-dev/consumer-pat) para acessar.
 
 ## Executando
 Ambiente Linux/macOS:
