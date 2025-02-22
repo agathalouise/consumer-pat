@@ -92,9 +92,9 @@ public class ValidateConsumerService {
     log.traceEntry("hasAtLeastOneCard(consumer={})", consumer);
 
     return log.traceExit("hasAtLeastOneCard(consumer): {}",
-        Objects.nonNull(consumer.getFuelCard().getCardNumber())
-            || Objects.nonNull(consumer.getFoodCard().getCardNumber())
-            || Objects.nonNull(consumer.getDrugstoreCard().getCardNumber()));
+        Objects.nonNull(consumer.getFuelCard())
+            || Objects.nonNull(consumer.getFoodCard())
+            || Objects.nonNull(consumer.getDrugstoreCard()));
   }
 
 }

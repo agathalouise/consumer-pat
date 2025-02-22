@@ -1,5 +1,6 @@
-package br.com.alelo.consumer.consumerpat.models;
+package br.com.alelo.consumer.consumerpat.models.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,18 +13,21 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class CardInfo implements Serializable {
+public class CardInfoRequest implements Serializable {
 
   @Serial private static final long serialVersionUID = 1L;
 
-  @Schema(description = "Número do cartão")
-  private Long cardNumber;
+  @Schema(description = "Gerar um novo cartão")
+  private Boolean generateNewCard;
 
   @Positive(message = "O saldo do cartão deve ser um valor positivo")
   @Schema(description = "Saldo do cartão")
   private BigDecimal cardBalance;
+
+  @JsonIgnore
+  private Long cardNumber;
 
 }

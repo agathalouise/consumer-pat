@@ -1,15 +1,19 @@
 package br.com.alelo.consumer.consumerpat.entities;
 
-import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
-import java.util.UUID;
+
+import static br.com.alelo.consumer.consumerpat.enums.EstablishmentTypes.*;
 
 
 @Getter
@@ -20,38 +24,78 @@ import java.util.UUID;
 @Table(name = "CONSUMER_DETAILS")
 public class ConsumerEntity implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    private UUID id;
+  @Id
+  @NotNull
+  private String id;
 
-    @NotNull private String name;
-    @NotNull private String documentNumber;
-    @NotNull private Date birthDate;
+  @NotEmpty
+  private String name;
 
-    @Embedded
-    private Contact contact;
+  @Column(unique = true, nullable = false)
+  private String documentNumber;
 
-    @Embedded
-    private Address address;
+  @NotNull
+  @Column(columnDefinition = "DATE")
+  private LocalDate birthDate;
 
-    @Embedded
-    private Card foodCard;
+  @Embedded
+  private Contact contact;
 
-    @Embedded
-    private Card fuelCard;
+  @Embedded
+  private Address address;
 
-    @Embedded
-    private Card drugstoreCard;
+  @Embedded
+  @AttributeOverrides({
+      @AttributeOverride(name = "cardNumber", column = @Column(name = "food_card_number")),
+      @AttributeOverride(name = "cardBalance", column = @Column(name = "food_card_balance"))
+  })
+  private Card foodCard;
 
-    public Card getCardByNumber(Long cardNumber) {
-        if (drugstoreCard != null && Objects.equals(drugstoreCard.getCardNumber(), cardNumber)) return drugstoreCard;
-        if (foodCard != null && Objects.equals(foodCard.getCardNumber(), cardNumber)) return foodCard;
-        if (fuelCard != null && Objects.equals(fuelCard.getCardNumber(), cardNumber)) return fuelCard;
-        return null;
+  @Embedded
+  @AttributeOverrides({
+      @AttributeOverride(name = "cardNumber", column = @Column(name = "fuel_card_number")),
+      @AttributeOverride(name = "cardBalance", column = @Column(name = "fuel_card_balance"))
+  })
+  private Card fuelCard;
+
+  @Embedded
+  @AttributeOverrides({
+      @AttributeOverride(name = "cardNumber", column = @Column(name = "drugstore_card_number")),
+      @AttributeOverride(name = "cardBalance", column = @Column(name = "drugstore_card_balance"))
+  })
+  private Card drugstoreCard;
+
+  public Card getCardByNumber(Long cardNumber) {
+    if (foodCard != null && Objects.equals(foodCard.getCardNumber(), cardNumber)) return foodCard;
+    if (drugstoreCard != null && Objects.equals(drugstoreCard.getCardNumber(), cardNumber)) return drugstoreCard;
+    if (fuelCard != null && Objects.equals(fuelCard.getCardNumber(), cardNumber)) return fuelCard;
+    return null;
+  }
+
+  public Card getCardByNumber(Long cardNumber, EstablishmentTypesEntity establishmentType) {
+
+    if ((foodCard != null && Objects.equals(foodCard.getCardNumber(), cardNumber))
+        && establishmentType.getName().equalsIgnoreCase(FOOD.name())) {
+      return foodCard;
     }
+
+    if ((drugstoreCard != null && Objects.equals(drugstoreCard.getCardNumber(), cardNumber))
+        && establishmentType.getName().equalsIgnoreCase(DRUGSTORE.name())) {
+      return drugstoreCard;
+    }
+
+    if ((fuelCard != null
+        && Objects.equals(fuelCard.getCardNumber(), cardNumber))
+        && establishmentType.getName().equalsIgnoreCase(FUEL.name())) {
+      return fuelCard;
+    }
+
+    throw new IllegalArgumentException("the card number does not match the establishment type");
+  }
 }
+
+
 

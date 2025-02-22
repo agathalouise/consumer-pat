@@ -1,12 +1,14 @@
 package br.com.alelo.consumer.consumerpat.entities;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Embeddable;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serial;
 import java.io.Serializable;
-
 
 @Embeddable
 @Getter
@@ -21,6 +23,6 @@ public class Contact implements Serializable {
   private Long mobilePhoneNumber;
   private Long residencePhoneNumber;
   private Long phoneNumber;
-  @NotNull
-  private String email;
+  @NotEmpty private String email;
+
 }

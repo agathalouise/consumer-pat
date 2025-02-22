@@ -13,7 +13,9 @@ Então, esteja preparado para mostrar suas habilidades e sua capacidade de tomar
 
 ## Requisitos para executar o projeto
 
-* JDK `11` ou `17`
+* JDK `17` ou superior;
+### Por gentileza, use Java 17 para executar esse projeto.
+
 
 ## Orientações 
 
@@ -43,6 +45,6 @@ gradlew bootRun
 ## Acesso ao Banco de Dados em memória (H2)
 
 * URL: [http://localhost:8080/h2-console/](http://localhost:8080/h2-console/)
-* JDBC URL: `jdbc:h2:mem:consumerEntity-pat`
+* JDBC URL: `jdbc:h2:mem:consumer-pat`
 * User Name: `sa`
 * Password: `sa`

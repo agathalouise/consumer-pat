@@ -1,12 +1,12 @@
 package br.com.alelo.consumer.consumerpat.services;
 
-import br.com.alelo.consumer.consumerpat.entities.ExtractEntity;
 import br.com.alelo.consumer.consumerpat.entities.EstablishmentTypesEntity;
-import br.com.alelo.consumer.consumerpat.respositories.ConsumerRepository;
-import br.com.alelo.consumer.consumerpat.respositories.ExtractRepository;
-import br.com.alelo.consumer.consumerpat.respositories.EstablishmentTypesRepository;
-import lombok.RequiredArgsConstructor;
+import br.com.alelo.consumer.consumerpat.entities.ExtractEntity;
 import br.com.alelo.consumer.consumerpat.models.request.PurchaseRequest;
+import br.com.alelo.consumer.consumerpat.respositories.ConsumerRepository;
+import br.com.alelo.consumer.consumerpat.respositories.EstablishmentTypesRepository;
+import br.com.alelo.consumer.consumerpat.respositories.ExtractRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 import static br.com.alelo.consumer.consumerpat.enums.TransactionType.BALANCE_DEDUCTED;
+import static br.com.alelo.consumer.consumerpat.utils.Utils.generateUUID;
 
 @Log4j2
 @Service
@@ -59,15 +60,15 @@ public class PurchaseService {
         .orElseThrow(() -> new IllegalArgumentException("Consumer not found for card number"));
 
     //find type by establishment type code
-    var listTypeEntities = establishmentTypesRepository.findAll();
-    var typeEntity = validateEstablishmentAndReturn(request.getEstablishmentTypeCode(), listTypeEntities);
+    var listEstablishment = establishmentTypesRepository.findAll();
+    var establishment = validateEstablishmentAndReturn(request.getEstablishmentTypeCode(), listEstablishment);
 
     //apply discount or additions
-    BigDecimal adjustment = getAdjustment(typeEntity, value);
+    BigDecimal adjustment = getAdjustment(establishment, value);
     value = value.add(adjustment);
 
     //deduct balance
-    var card = consumer.getCardByNumber(request.getCardNumber());
+    var card = consumer.getCardByNumber(request.getCardNumber(), establishment);
     validateBalance(card.getCardBalance(), value);
     card.deductBalance(value);
 
@@ -172,10 +173,13 @@ public class PurchaseService {
 
     log.debug("Updating extract in db");
     extractRepository.save(ExtractEntity.builder()
+        .id(generateUUID())
         .description(request.getProductDescription())
         .dateOfEvent(new Date())
         .cardNumber(request.getCardNumber())
         .amount(value)
+        .establishmentId(request.getEstablishmentTypeCode())
+        .establishmentName(request.getEstablishmentName())
         .transactionType(BALANCE_DEDUCTED)
         .build());
 

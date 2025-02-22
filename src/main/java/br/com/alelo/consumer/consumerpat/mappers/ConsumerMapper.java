@@ -7,12 +7,16 @@ import br.com.alelo.consumer.consumerpat.entities.Contact;
 import br.com.alelo.consumer.consumerpat.models.AddressInfo;
 import br.com.alelo.consumer.consumerpat.models.CardInfo;
 import br.com.alelo.consumer.consumerpat.models.ContactInfo;
+import br.com.alelo.consumer.consumerpat.models.request.CardInfoRequest;
 import br.com.alelo.consumer.consumerpat.models.request.ConsumerRequest;
 import br.com.alelo.consumer.consumerpat.models.response.ConsumerResponse;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class ConsumerMapper {
 
-  //NA VIDA REAL PODERIAMOS UTILIZAR O MAPSTRUCT OU OUTRA LIB PRA EVITAR O CODIGO ABAIXO
+  //NA VIDA REAL PODERIAMOS UTILIZAR O MAPSTRUCT OU OUTRA LIB PRA EVITAR O  CODIGO ABAIXO
 
   /**
    * Converts a ConsumerRequest into a ConsumerEntity, which represents a consumer in the database.
@@ -20,8 +24,7 @@ public class ConsumerMapper {
    * @param consumerRequest the ConsumerRequest to be converted
    * @return a ConsumerEntity with the fields filled in from the given ConsumerRequest
    */
-  public ConsumerEntity toConsumerEntity(ConsumerRequest consumerRequest) {
-    ConsumerEntity consumerEntity = new ConsumerEntity();
+  public void toConsumerEntity(ConsumerRequest consumerRequest, ConsumerEntity consumerEntity) {
 
     // Verify if the fields are not null before accessing them
     if (consumerRequest.getName() != null) {
@@ -35,26 +38,46 @@ public class ConsumerMapper {
     }
 
     if (consumerRequest.getContactInfo() != null) {
+      if (consumerEntity.getContact() == null) {
+        consumerEntity.setContact(toContact(consumerRequest));
+      } else {
+        updateContact(consumerRequest.getContactInfo(), consumerEntity.getContact());
+      }
       consumerEntity.setContact(toContact(consumerRequest));
     }
 
     if (consumerRequest.getAddress() != null) {
+      if (consumerEntity.getAddress() == null) {
+        consumerEntity.setAddress(toAddress(consumerRequest));
+      } else {
+        updateAddress(consumerRequest.getAddress(), consumerEntity.getAddress());
+      }
       consumerEntity.setAddress(toAddress(consumerRequest));
     }
 
     if (consumerRequest.getFoodCard() != null) {
-      consumerEntity.setFoodCard(toCard(consumerRequest.getFoodCard()));
+      if (consumerEntity.getFoodCard() == null) {
+        consumerEntity.setFoodCard(toCard(consumerRequest.getFoodCard()));
+      } else {
+        updateCard(consumerRequest.getFoodCard(), consumerEntity.getFoodCard());
+      }
     }
 
     if (consumerRequest.getFuelCard() != null) {
-      consumerEntity.setFuelCard(toCard(consumerRequest.getFuelCard()));
+      if (consumerEntity.getFuelCard() == null) {
+        consumerEntity.setFuelCard(toCard(consumerRequest.getFuelCard()));
+      } else {
+        updateCard(consumerRequest.getFuelCard(), consumerEntity.getFuelCard());
+      }
     }
 
     if (consumerRequest.getDrugstoreCard() != null) {
-      consumerEntity.setDrugstoreCard(toCard(consumerRequest.getDrugstoreCard()));
+      if (consumerEntity.getDrugstoreCard() == null) {
+        consumerEntity.setDrugstoreCard(toCard(consumerRequest.getDrugstoreCard()));
+      } else {
+        updateCard(consumerRequest.getDrugstoreCard(), consumerEntity.getDrugstoreCard());
+      }
     }
-
-    return consumerEntity;
   }
 
   /**
@@ -68,6 +91,10 @@ public class ConsumerMapper {
     ConsumerResponse consumerResponse = new ConsumerResponse();
 
     // Verify if the fields are not null before accessing them
+    if (consumerEntity.getId() != null) {
+      consumerResponse.setId(consumerEntity.getId().toString());
+    }
+
     if (consumerEntity.getName() != null) {
       consumerResponse.setName(consumerEntity.getName());
     }
@@ -109,7 +136,6 @@ public class ConsumerMapper {
    */
   private CardInfo toCard(Card card) {
     CardInfo cardInfo = new CardInfo();
-
     if (card.getCardNumber() != null) {
       cardInfo.setCardNumber(card.getCardNumber());
     }
@@ -120,22 +146,36 @@ public class ConsumerMapper {
     return cardInfo;
   }
 
-  /**
-   * Converts a CardInfo object into a Card entity.
-   *
-   * @param cardInfo the CardInfo object containing card details
-   * @return a Card entity with the card number and balance from the CardInfo
-   */
-  private Card toCard(CardInfo cardInfo) {
-    Card card = new Card();
 
+  /**
+   * Updates the given Card according to the information in the given CardInfoRequest
+   *
+   * @param cardInfo the CardInfo containing the values to be updated
+   * @param card     the Card to be updated
+   */
+  private void updateCard(CardInfoRequest cardInfo, Card card) {
     if (cardInfo.getCardNumber() != null) {
       card.setCardNumber(cardInfo.getCardNumber());
     }
     if (cardInfo.getCardBalance() != null) {
       card.setCardBalance(cardInfo.getCardBalance());
     }
+  }
 
+  /**
+   * Converts a CardInfoRequest into a Card.
+   *
+   * @param cardInfo the CardInfoRequest containing the card information
+   * @return a Card with the card number and balance set if they are not null in the given CardInfoRequest
+   */
+  private Card toCard(CardInfoRequest cardInfo) {
+    Card card = new Card();
+    if (cardInfo.getCardNumber() != null) {
+      card.setCardNumber(cardInfo.getCardNumber());
+    }
+    if (cardInfo.getCardBalance() != null) {
+      card.setCardBalance(cardInfo.getCardBalance());
+    }
     return card;
   }
 
@@ -167,6 +207,31 @@ public class ConsumerMapper {
     }
 
     return address;
+  }
+
+  /**
+   * Updates the given Address with the values from the given AddressInfo.
+   * The fields that are not null in the given AddressInfo are updated in the given Address.
+   *
+   * @param addressInfo the AddressInfo containing the values to be updated
+   * @param address     the Address to be updated
+   */
+  private void updateAddress(AddressInfo addressInfo, Address address) {
+    if (addressInfo.getStreet() != null) {
+      address.setStreet(addressInfo.getStreet());
+    }
+    if (addressInfo.getNumber() != 0) {
+      address.setNumber(addressInfo.getNumber());
+    }
+    if (addressInfo.getCity() != null) {
+      address.setCity(addressInfo.getCity());
+    }
+    if (addressInfo.getCountry() != null) {
+      address.setCountry(addressInfo.getCountry());
+    }
+    if (addressInfo.getPostalCode() != 0) {
+      address.setPostalCode(addressInfo.getPostalCode());
+    }
   }
 
   /**
@@ -207,22 +272,43 @@ public class ConsumerMapper {
   private Contact toContact(ConsumerRequest consumerRequest) {
     Contact contact = new Contact();
 
-    if (consumerRequest.getContactInfo() != null) {
-      if (consumerRequest.getContactInfo().getPhoneNumber() != null) {
-        contact.setPhoneNumber(consumerRequest.getContactInfo().getPhoneNumber());
-      }
-      if (consumerRequest.getContactInfo().getMobilePhoneNumber() != null) {
-        contact.setMobilePhoneNumber(consumerRequest.getContactInfo().getMobilePhoneNumber());
-      }
-      if (consumerRequest.getContactInfo().getResidencePhoneNumber() != null) {
-        contact.setResidencePhoneNumber(consumerRequest.getContactInfo().getResidencePhoneNumber());
-      }
-      if (consumerRequest.getContactInfo().getEmail() != null) {
-        contact.setEmail(consumerRequest.getContactInfo().getEmail());
-      }
+    if (consumerRequest.getContactInfo().getPhoneNumber() != null) {
+      contact.setPhoneNumber(consumerRequest.getContactInfo().getPhoneNumber());
+    }
+    if (consumerRequest.getContactInfo().getMobilePhoneNumber() != null) {
+      contact.setMobilePhoneNumber(consumerRequest.getContactInfo().getMobilePhoneNumber());
+    }
+    if (consumerRequest.getContactInfo().getResidencePhoneNumber() != null) {
+      contact.setResidencePhoneNumber(consumerRequest.getContactInfo().getResidencePhoneNumber());
+    }
+    if (consumerRequest.getContactInfo().getEmail() != null) {
+      contact.setEmail(consumerRequest.getContactInfo().getEmail());
     }
 
     return contact;
+  }
+
+
+  /**
+   * Updates the fields of a Contact object from a ContactInfo object.
+   *
+   * @param contactInfo the ContactInfo object from which to update the fields
+   * @param contact     the Contact object to be updated
+   */
+  private void updateContact(ContactInfo contactInfo, Contact contact) {
+
+    if (contactInfo.getPhoneNumber() != null) {
+      contact.setPhoneNumber(contactInfo.getPhoneNumber());
+    }
+    if (contactInfo.getMobilePhoneNumber() != null) {
+      contact.setMobilePhoneNumber(contactInfo.getMobilePhoneNumber());
+    }
+    if (contactInfo.getResidencePhoneNumber() != null) {
+      contact.setResidencePhoneNumber(contactInfo.getResidencePhoneNumber());
+    }
+    if (contactInfo.getEmail() != null) {
+      contact.setEmail(contactInfo.getEmail());
+    }
   }
 
   /**

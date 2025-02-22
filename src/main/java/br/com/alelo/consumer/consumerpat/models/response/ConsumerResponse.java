@@ -7,7 +7,7 @@ import br.com.alelo.consumer.consumerpat.models.ContactInfo;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -17,10 +17,10 @@ import java.util.Date;
 public class ConsumerResponse implements Serializable {
     @Serial private static final long serialVersionUID = 1L;
 
-    private int id;
+    private String id;
     private String name;
     private String documentNumber;
-    private Date birthDate;
+    private LocalDate birthDate;
 
     private ContactInfo contactInfo;
 

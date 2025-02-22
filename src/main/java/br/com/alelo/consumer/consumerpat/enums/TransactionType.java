@@ -4,4 +4,5 @@ public enum TransactionType {
 
   BALANCE_ADDED,
   BALANCE_DEDUCTED;
+
 }

@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 @Data
 public class AddressInfo implements Serializable {
+
   @Serial private static final long serialVersionUID = 1L;
 
   @Schema(description = "Rua")
@@ -24,4 +25,5 @@ public class AddressInfo implements Serializable {
 
   @Schema(description = "Código postal")
   private Integer postalCode;
+
 }

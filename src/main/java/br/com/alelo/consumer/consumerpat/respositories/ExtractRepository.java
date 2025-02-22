@@ -3,5 +3,5 @@ package br.com.alelo.consumer.consumerpat.respositories;
 import br.com.alelo.consumer.consumerpat.entities.ExtractEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ExtractRepository extends JpaRepository<ExtractEntity, Integer> {
+public interface ExtractRepository extends JpaRepository<ExtractEntity, String> {
 }

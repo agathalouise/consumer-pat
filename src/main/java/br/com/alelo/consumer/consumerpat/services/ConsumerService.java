@@ -1,6 +1,5 @@
 package br.com.alelo.consumer.consumerpat.services;
 
-
 import br.com.alelo.consumer.consumerpat.entities.ConsumerEntity;
 import br.com.alelo.consumer.consumerpat.exceptions.DataIntegratyViolationException;
 import br.com.alelo.consumer.consumerpat.exceptions.NotFoundException;
@@ -18,7 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Objects;
+
+import static br.com.alelo.consumer.consumerpat.utils.CardNumberGenerator.createCard;
+import static br.com.alelo.consumer.consumerpat.utils.Utils.generateUUID;
 
 @Log4j2
 @Service
@@ -61,7 +63,7 @@ public class ConsumerService {
   public void createConsumer(ConsumerRequest consumerRequest) {
     log.traceEntry("createConsumer(consumerRequest={})", consumerRequest);
 
-    var optionalConsumer = repository.findByDocNumber(consumerRequest.getDocumentNumber());
+    var optionalConsumer = repository.findByDocumentNumber(consumerRequest.getDocumentNumber());
 
     if (optionalConsumer.isPresent()) {
       log.warn("Consumer with id {} already exists", optionalConsumer.get().getId());
@@ -69,12 +71,46 @@ public class ConsumerService {
     }
 
     validateConsumer.validate(consumerRequest);
+    generateCardNumber(consumerRequest);
+
+    var consumerEntity = new ConsumerEntity();
+    mapper.toConsumerEntity(consumerRequest, consumerEntity);
+    consumerEntity.setId(generateUUID());
 
     log.debug("saving consumer in db");
-    repository.save(mapper.toConsumerEntity(consumerRequest));
+    repository.save(consumerEntity);
     log.debug("consumer saved sucessfully");
 
     log.traceExit("createConsumer(consumerRequest): void");
+  }
+
+  /**
+   * If the given {@link ConsumerRequest} has at least one card where
+   * getGenerateNewCard() is true, then a new card number
+   * will be generated and set in the respective card. The card balance will be
+   * set according to the value of getCardBalance().
+   *
+   * @param consumerRequest the consumer request containing the cards
+   */
+  private void generateCardNumber(ConsumerRequest consumerRequest) {
+    log.traceEntry("generateCardNumber(consumerRequest={})", consumerRequest);
+
+    if (Objects.nonNull(consumerRequest.getFoodCard())
+        && Boolean.TRUE.equals(consumerRequest.getFoodCard().getGenerateNewCard())) {
+      consumerRequest.setFoodCard(createCard(consumerRequest.getFoodCard().getCardBalance()));
+    }
+
+    if (Objects.nonNull(consumerRequest.getFuelCard())
+        && Boolean.TRUE.equals(consumerRequest.getFuelCard().getGenerateNewCard())) {
+      consumerRequest.setFuelCard(createCard(consumerRequest.getFuelCard().getCardBalance()));
+    }
+
+    if (Objects.nonNull(consumerRequest.getDrugstoreCard())
+        && Boolean.TRUE.equals(consumerRequest.getDrugstoreCard().getGenerateNewCard())) {
+      consumerRequest.setDrugstoreCard(createCard(consumerRequest.getDrugstoreCard().getCardBalance()));
+    }
+
+    log.traceExit("generateCardNumber(consumerRequest): void");
   }
 
   /**
@@ -91,17 +127,19 @@ public class ConsumerService {
   public void updateConsumer(ConsumerRequest updateRequest, String id) {
     log.traceEntry("updateConsumer(updateRequest={}, id={})", updateRequest, id);
 
-    var existingConsumerEntity = repository.findById(UUID.fromString(id))
+    var existingConsumerEntity = repository.findById(id)
         .orElseThrow(() -> {
           log.warn("Consumer with id {} not found", id);
           return new NotFoundException("Consumer not found in database");
         });
 
+    generateCardNumber(updateRequest);
     updateRequest.getFoodCard().setCardBalance(null);
     updateRequest.getFuelCard().setCardBalance(null);
     updateRequest.getDrugstoreCard().setCardBalance(null);
 
-    existingConsumerEntity = mapper.toConsumerEntity(updateRequest);
+    mapper.toConsumerEntity(updateRequest, existingConsumerEntity);
+    existingConsumerEntity.setId(id);
 
     log.debug("updating consumer in db");
     repository.save(existingConsumerEntity);

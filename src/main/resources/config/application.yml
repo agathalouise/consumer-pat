@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:consumer-pat;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:consumer-pat; DB_CLOSE_DELAY=-1
     username: sa
     password: sa
   jpa:
@@ -12,4 +12,10 @@ spring:
     console.enabled: true
     console.path: /h2-console
 
-trace: info
+
+#testing cache
+#logging:
+#  level:
+#    org.springframework.web: DEBUG
+#    org.springframework.cache: DEBUG
+#    org.springframework.cache.interceptor: TRACE

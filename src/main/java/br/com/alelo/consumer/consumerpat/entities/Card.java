@@ -1,6 +1,9 @@
 package br.com.alelo.consumer.consumerpat.entities;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -18,6 +21,7 @@ public class Card implements Serializable {
   @Serial
   private static final long serialVersionUID = 1L;
 
+  @Column(unique = true)
   private Long cardNumber;
 
   @Column(precision = 15, scale = 2)

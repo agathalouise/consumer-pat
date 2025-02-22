@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import static br.com.alelo.consumer.consumerpat.enums.TransactionType.BALANCE_ADDED;
+import static br.com.alelo.consumer.consumerpat.utils.Utils.generateUUID;
 
 
 @Log4j2
@@ -69,6 +70,7 @@ public class BalanceService {
 
     log.debug("Updating extract in db");
     extractRepository.save(ExtractEntity.builder()
+        .id(generateUUID())
         .description("Recharge of balance")
         .amount(value)
         .cardNumber(cardNumber)

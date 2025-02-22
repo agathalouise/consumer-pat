@@ -8,19 +8,18 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
-import java.util.UUID;
 
-public interface ConsumerRepository extends JpaRepository<ConsumerEntity, UUID> {
-    Page<ConsumerEntity> findAll(Pageable pageable);
+public interface ConsumerRepository extends JpaRepository<ConsumerEntity, String> {
+  Page<ConsumerEntity> findAll(Pageable pageable);
 
-    Optional<ConsumerEntity> findByDocNumber(String docNumber);
+  Optional<ConsumerEntity> findByDocumentNumber(String docNumber);
 
-    @Query("""
-                SELECT c FROM Consumer c 
-                WHERE c.drugstoreNumber = :cardNumber 
-                   OR c.foodCardNumber = :cardNumber 
-                   OR c.fuelCardNumber = :cardNumber
-            """)
-    Optional<ConsumerEntity> findByAnyCardNumber(@Param("cardNumber") Long cardNumber);
+  @Query("""
+       SELECT c FROM ConsumerEntity c 
+       WHERE c.drugstoreCard.cardNumber = :cardNumber 
+          OR c.foodCard.cardNumber = :cardNumber 
+          OR c.fuelCard.cardNumber = :cardNumber
+      """)
+  Optional<ConsumerEntity> findByAnyCardNumber(@Param("cardNumber") Long cardNumber);
 
 }
