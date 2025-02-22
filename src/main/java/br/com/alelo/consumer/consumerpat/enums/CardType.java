@@ -9,10 +9,10 @@ public enum CardType {
     FOOD,
     FUEL;
 
-    public static CardType fromCardNumber(ConsumerEntity consumerEntity, Long cardNumber) {
-        if (Objects.equals(consumerEntity.getDrugstoreNumber(), cardNumber)) return DRUGSTORE;
-        if (Objects.equals(consumerEntity.getFoodCardNumber(), cardNumber)) return FOOD;
-        if (Objects.equals(consumerEntity.getFuelCardNumber(), cardNumber)) return FUEL;
-        throw new IllegalArgumentException("Invalid card number: " + cardNumber);
-    }
+//    public static CardType fromCardNumber(ConsumerEntity consumerEntity, Long cardNumber) {
+//        if (Objects.equals(consumerEntity.getDrugstoreCardNumber(), cardNumber)) return DRUGSTORE;
+//        if (Objects.equals(consumerEntity.getFoodCardNumber(), cardNumber)) return FOOD;
+//        if (Objects.equals(consumerEntity.getFuelCardNumber(), cardNumber)) return FUEL;
+//        throw new IllegalArgumentException("Invalid card number: " + cardNumber);
+//    }
 }

@@ -1,4 +1,4 @@
-package br.com.alelo.consumer.consumerpat.respository;
+package br.com.alelo.consumer.consumerpat.respositories;
 
 import br.com.alelo.consumer.consumerpat.entities.ConsumerEntity;
 import org.springframework.data.domain.Page;
@@ -8,8 +8,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public interface ConsumerRepository extends JpaRepository<ConsumerEntity, Integer> {
+public interface ConsumerRepository extends JpaRepository<ConsumerEntity, UUID> {
     Page<ConsumerEntity> findAll(Pageable pageable);
 
     Optional<ConsumerEntity> findByDocNumber(String docNumber);

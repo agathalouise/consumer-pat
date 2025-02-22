@@ -1,4 +1,4 @@
-package models.response;
+package br.com.alelo.consumer.consumerpat.models.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

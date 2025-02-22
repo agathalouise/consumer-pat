@@ -4,19 +4,18 @@ import br.com.alelo.consumer.consumerpat.services.BalanceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import models.request.BalanceRequest;
+import br.com.alelo.consumer.consumerpat.models.request.BalanceRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/balance")
-@Tag(name = "Balance", description = "Operations related to card balance")
+@Tag(name = "Balance", description = "Operações relacionadas ao saldo do cartão")
 public class BalanceController {
 
   private final BalanceService balanceService;
@@ -28,13 +27,12 @@ public class BalanceController {
       @ApiResponse(responseCode = "404", description = "Beneficiary or card not found", content = @Content),
       @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
   })
-  @PostMapping("/add/{beneficiaryId}/cards/{cardId}")
+  @PostMapping("/add/{cardNumber}")
   public ResponseEntity<Void> addBalance(
-      @Parameter(description = "ID of the beneficiary", example = "123") @PathVariable Long beneficiaryId,
-      @Parameter(description = "ID of the card", example = "456") @PathVariable Long cardId,
+      @Parameter(description = "The number of the card", example = "1111222233334444") @PathVariable Long cardNumber,
       @RequestBody BalanceRequest request) {
 
-    balanceService.addBalance(beneficiaryId, cardId, request.getAmount());
+    balanceService.addBalance(cardNumber, request.getAmount());
     return ResponseEntity.ok().build();
   }
 }

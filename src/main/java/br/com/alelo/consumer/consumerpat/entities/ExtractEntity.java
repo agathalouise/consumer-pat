@@ -1,10 +1,16 @@
 package br.com.alelo.consumer.consumerpat.entities;
 
+import br.com.alelo.consumer.consumerpat.enums.TransactionType;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.UUID;
 
 
 @Entity
@@ -12,28 +18,25 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ExtractEntity {
+@Table(name = "EXTRACT")
+public class ExtractEntity implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+  @Serial
+  private static final long serialVersionUID = 1L;
 
-    @Column
-    private int establishmentNameId;
+  @Id
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+  private UUID id;
 
-    @Column
-    private String establishmentName;
+  private int establishmentId;
+  private String establishmentName;
+  private String description;
+  @NotNull private Date dateOfEvent;
+  @NotNull private Long cardNumber;
+  @NotNull private BigDecimal amount;
 
-    @Column
-    private String productDescription;
-
-    @Column
-    private Date dateBuy;
-
-    @Column
-    private Long cardNumber;
-
-    @Column
-    private BigDecimal amount;
+  @Enumerated(EnumType.STRING)
+  @NotNull private TransactionType transactionType;
 
 }

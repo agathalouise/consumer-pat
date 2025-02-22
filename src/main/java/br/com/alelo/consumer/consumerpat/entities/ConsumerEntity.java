@@ -1,63 +1,57 @@
 package br.com.alelo.consumer.consumerpat.entities;
 
-import br.com.alelo.consumer.consumerpat.enums.CardType;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.io.Serial;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 
 
-
-@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "CONSUMER_DETAILS")
 public class ConsumerEntity implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-    private String name;
-    @NonNull
-    private String documentNumber;
-    private Date birthDate;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    private UUID id;
 
-    //contacts
-    private Long mobilePhoneNumber;
-    private Long residencePhoneNumber;
-    private Long phoneNumber;
-    private String email;
+    @NotNull private String name;
+    @NotNull private String documentNumber;
+    @NotNull private Date birthDate;
 
-    //Address
-    private String street;
-    private int number;
-    private String city;
-    private String country;
-    private int portalCode;
+    @Embedded
+    private Contact contact;
 
-    //cards
-    private Long foodCardNumber;
-    private BigDecimal foodCardBalance;
+    @Embedded
+    private Address address;
 
-    private Long fuelCardNumber;
-    private BigDecimal fuelCardBalance;
+    @Embedded
+    private Card foodCard;
 
-    private Long drugstoreNumber;
-    private BigDecimal drugstoreCardBalance;
+    @Embedded
+    private Card fuelCard;
 
+    @Embedded
+    private Card drugstoreCard;
 
-    public void addBalance(CardType cardType, BigDecimal value) {
-        switch (cardType) {
-            case DRUGSTORE -> drugstoreCardBalance = drugstoreCardBalance.add(value);
-            case FOOD -> foodCardBalance = foodCardBalance.add(value);
-            case FUEL -> fuelCardBalance = fuelCardBalance.add(value);
-        }
+    public Card getCardByNumber(Long cardNumber) {
+        if (drugstoreCard != null && Objects.equals(drugstoreCard.getCardNumber(), cardNumber)) return drugstoreCard;
+        if (foodCard != null && Objects.equals(foodCard.getCardNumber(), cardNumber)) return foodCard;
+        if (fuelCard != null && Objects.equals(fuelCard.getCardNumber(), cardNumber)) return fuelCard;
+        return null;
     }
-
 }
+

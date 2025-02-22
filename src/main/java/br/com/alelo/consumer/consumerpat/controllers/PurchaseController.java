@@ -1,32 +1,30 @@
 package br.com.alelo.consumer.consumerpat.controllers;
 
 import br.com.alelo.consumer.consumerpat.services.PurchaseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import models.request.PurchaseRequest;
-import models.response.PurchaseResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.alelo.consumer.consumerpat.models.request.PurchaseRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-@Log4j2
-@Controller
+@Tag(name = "Purchase", description = "API para processar compras")
+@RestController
 @RequestMapping("/v1/purchase")
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class PurchaseController {
 
   private final PurchaseService purchaseService;
 
+  @Operation(summary = "Processar compra", description = "Processa uma nova compra e retorna a resposta correspondente.")
+  @ApiResponse(responseCode = "200", description = "Compra processada com sucesso.")
+  @ApiResponse(responseCode = "400", description = "Requisição inválida.")
   @PostMapping("/process")
-  public ResponseEntity<PurchaseResponse> processPurchase(@Valid @RequestBody PurchaseRequest request) {
-    log.info("Processando compra: {}", request);
-
-    PurchaseResponse response = purchaseService.processPurchase(request);
-
-    return ResponseEntity.ok(response);
+  public ResponseEntity<Void> processPurchase(@Valid @RequestBody PurchaseRequest request) {
+    purchaseService.processPurchase(request);
+    return ResponseEntity.ok().build();
   }
 }
-

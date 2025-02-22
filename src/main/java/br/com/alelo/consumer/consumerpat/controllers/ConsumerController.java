@@ -1,66 +1,62 @@
 package br.com.alelo.consumer.consumerpat.controllers;
 
-import br.com.alelo.consumer.consumerpat.services.BalanceService;
 import br.com.alelo.consumer.consumerpat.services.ConsumerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
-import models.request.ConsumerRequest;
-import models.response.ConsumerResponse;
-import models.response.PaginatedResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.alelo.consumer.consumerpat.models.request.ConsumerRequest;
+import br.com.alelo.consumer.consumerpat.models.response.ConsumerResponse;
+import br.com.alelo.consumer.consumerpat.models.response.PaginatedResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Log4j2
-@Controller
-@RequestMapping("/v1/consumer")
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+import javax.validation.Valid;
+
 @Slf4j
+@RestController
+@RequestMapping("/v1/consumer")
+@RequiredArgsConstructor
+@Tag(name = "Consumer", description = "Endpoints para gerenciamento de clientes")
 public class ConsumerController {
 
   private final ConsumerService consumerService;
 
-  /* Listar todos os clientes (obs.: tabela possui cerca de 50.000 registros) */
 
+  @Operation(summary = "Listar todos os clientes", description = "Retorna uma lista paginada de clientes")
+  @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso",
+      content = @Content(schema = @Schema(implementation = PaginatedResponse.class)))
   @GetMapping("/consumerList")
   public ResponseEntity<PaginatedResponse<ConsumerResponse>> listAllConsumers(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    var response = consumerService.listAllConsumers(page, size);
-    return ResponseEntity.ok(response);
+
+    return ResponseEntity.ok(consumerService.listAllConsumers(page, size));
   }
 
-  /* Cadastrar novos clientes */
-  @RequestMapping(value = "/createConsumer", method = RequestMethod.POST)
-  public void createConsumer(@RequestBody ConsumerRequest consumer) {
-
+  @Operation(summary = "Cadastrar um novo cliente", description = "Cria um novo cliente com as informações fornecidas")
+  @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso")
+  @ApiResponse(responseCode = "400", description = "Requisição inválida")
+  @ApiResponse(responseCode = "409", description = "Cliente já cadastrado")
+  @PostMapping("/createConsumer")
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<Void> createConsumer(@Valid @RequestBody ConsumerRequest consumer) {
     consumerService.createConsumer(consumer);
-
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
-  // Atualizar cliente, lembrando que não deve ser possível alterar o saldo do cartão
-  @PostMapping("/updateConsumer/{id}")
-  public void updateConsumer(@RequestBody ConsumerRequest consumer,
-                             @PathVariable Long id) {
-
+  @Operation(summary = "Atualizar um cliente", description = "Atualiza os dados do cliente, exceto o saldo do cartão")
+  @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso")
+  @ApiResponse(responseCode = "400", description = "Requisição inválida")
+  @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+  @PutMapping("/updateConsumer/{id}")
+  public ResponseEntity<Void> updateConsumer(@Valid @RequestBody ConsumerRequest consumer,
+                                             @PathVariable String id) {
     consumerService.updateConsumer(consumer, id);
+    return ResponseEntity.ok().build();
   }
-
-
-  //todo arrumar o controller com swagger e os response entities
-  //todo criar um novo controller pra regarga de cartao, e dar um novo nome pro service
-  // todo salvar o extrato em cada transacao envolvendo dinheiro
-  // arrumar as entidades do banco
-  // criar uma anotacao para validar os numeros do cartao
-  // ver se o enum do type e a classe fazem sentido
-  // adicionar logs info e de erros
-  // formatar o codigo
-  // testar o codigo inlusive o cache
-  // ver se cria uma composicao pra classe consumer
-  // swagger
-  // mapper
-  //exception
-
 }

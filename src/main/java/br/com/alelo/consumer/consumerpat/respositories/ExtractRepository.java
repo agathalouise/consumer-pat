@@ -1,4 +1,4 @@
-package br.com.alelo.consumer.consumerpat.respository;
+package br.com.alelo.consumer.consumerpat.respositories;
 
 import br.com.alelo.consumer.consumerpat.entities.ExtractEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

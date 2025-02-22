@@ -16,6 +16,6 @@ public class CacheConfig {
      */
     @Bean
     public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager("types");
+        return new ConcurrentMapCacheManager("establishment_type");
     }
 }

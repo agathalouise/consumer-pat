@@ -1,4 +1,4 @@
-package models.request;
+package br.com.alelo.consumer.consumerpat.models.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

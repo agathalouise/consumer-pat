@@ -14,7 +14,7 @@ assert System.properties["java.specification.version"] == "11" || "17"
 
 configurations {
     compileOnly {
-        extendsFrom annotationProcessor
+        extendsFrom annotationProcessorf
     }
 }
 
